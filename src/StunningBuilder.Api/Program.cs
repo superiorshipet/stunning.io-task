@@ -1,4 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using StunningBuilder.Api.Common.Database;
 using StunningBuilder.Api.Common.Errors;
+using StunningBuilder.Api.Common.Health;
+using StunningBuilder.Api.Common.Redis;
 using StunningBuilder.Api.Common.Routing;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +10,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure ProblemDetails & Global Exception Handling
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+// Configure Database (EF Core / PostgreSQL)
+var postgresConnectionString = ConnectionStringHelper.ResolvePostgresConnectionString(builder.Configuration);
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseNpgsql(postgresConnectionString);
+});
+
+// Configure Redis
+builder.Services.AddRedis(builder.Configuration);
+
+// Configure Health Checks
+builder.Services.AddAppHealthChecks(builder.Configuration);
 
 // Configure OpenAPI
 builder.Services.AddOpenApi(options =>
@@ -31,6 +48,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Health Check Endpoints
+app.MapAppHealthChecks();
 
 // Map API Endpoints
 app.MapApiV1Endpoints();

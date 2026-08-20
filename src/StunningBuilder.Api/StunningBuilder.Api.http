@@ -1,5 +1,9 @@
 @StunningBuilder.Api_HostAddress = http://localhost:5176
 
+### System Health Check (PostgreSQL & Redis)
+GET {{StunningBuilder.Api_HostAddress}}/health
+Accept: application/json
+
 ### Get Supported Integrations
 GET {{StunningBuilder.Api_HostAddress}}/api/v1/integrations
 Accept: application/json
