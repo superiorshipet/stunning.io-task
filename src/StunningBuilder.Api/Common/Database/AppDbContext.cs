@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using StunningBuilder.Api.Features.Ai;
 using StunningBuilder.Api.Features.Apps;
 using StunningBuilder.Api.Features.Integrations;
 
@@ -8,6 +9,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<App> Apps => Set<App>();
     public DbSet<IntegrationConnection> IntegrationConnections => Set<IntegrationConnection>();
+    public DbSet<GenerationSession> GenerationSessions => Set<GenerationSession>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -24,18 +24,27 @@ Content-Type: application/json
   "framework": "nextjs"
 }
 
-### List Connected Integrations for an App
-GET {{StunningBuilder.Api_HostAddress}}/api/v1/apps/{{AppId}}/integrations
-Accept: application/json
-
-### Connect Stripe Integration to App
-POST {{StunningBuilder.Api_HostAddress}}/api/v1/apps/{{AppId}}/integrations
+### AI Generate App Scaffold (Direct JSON)
+POST {{StunningBuilder.Api_HostAddress}}/api/v1/generate
 Content-Type: application/json
 
 {
-  "integrationId": "stripe",
-  "accountName": "Primary Stripe Account",
-  "credentialsJson": "{\"apiKey\": \"sk_test_12345\"}"
+  "prompt": "Create a modern fitness subscription app with Stripe recurring billing and workout trackers",
+  "template": "saas",
+  "framework": "nextjs",
+  "requestedIntegrations": ["stripe", "slack"]
+}
+
+### AI Stream App Scaffold (Server-Sent Events)
+POST {{StunningBuilder.Api_HostAddress}}/api/v1/generate/stream
+Content-Type: application/json
+Accept: text/event-stream
+
+{
+  "prompt": "Create a modern real estate marketplace with Google Sheets lead sync",
+  "template": "ecommerce",
+  "framework": "nextjs",
+  "requestedIntegrations": ["google-sheets"]
 }
 
 ### Get OpenAPI Specification

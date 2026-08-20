@@ -5,6 +5,7 @@ using StunningBuilder.Api.Common.Errors;
 using StunningBuilder.Api.Common.Health;
 using StunningBuilder.Api.Common.Redis;
 using StunningBuilder.Api.Common.Routing;
+using StunningBuilder.Api.Features.Ai;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Configure Redis
 builder.Services.AddRedis(builder.Configuration);
+
+// Configure OpenAI Service
+builder.Services.AddSingleton<OpenAiService>();
 
 // Configure Health Checks
 builder.Services.AddAppHealthChecks(builder.Configuration);

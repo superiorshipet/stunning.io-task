@@ -1,3 +1,4 @@
+using StunningBuilder.Api.Features.Ai;
 using StunningBuilder.Api.Features.Apps;
 using StunningBuilder.Api.Features.Integrations;
 
@@ -13,6 +14,7 @@ public static class EndpointRouteExtensions
         v1Group.MapIntegrationsEndpoints();
         v1Group.MapAppsEndpoints();
         v1Group.MapIntegrationConnectionEndpoints();
+        v1Group.MapAiEndpoints();
 
         return app;
     }
