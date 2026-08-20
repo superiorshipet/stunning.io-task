@@ -9,6 +9,7 @@ using StunningBuilder.Api.Features.Ai;
 using StunningBuilder.Api.Features.Builds;
 
 var builder = WebApplication.CreateBuilder(args);
+const string CorsPolicyName = "FrontendClient";
 
 // Configure ProblemDetails & Global Exception Handling
 builder.Services.AddProblemDetails();
@@ -27,6 +28,34 @@ builder.Services.AddRedis(builder.Configuration);
 // Configure AI and Build Services
 builder.Services.AddHttpClient<OpenAiService>();
 builder.Services.AddSingleton<BuildService>();
+
+var configuredOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins")
+    .GetChildren()
+    .Select(origin => origin.Value)
+    .Where(origin => !string.IsNullOrWhiteSpace(origin))
+    .Select(origin => origin!.Trim())
+    .ToArray();
+
+if (configuredOrigins.Length == 0)
+{
+    configuredOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? string.Empty)
+        .Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}
+
+var allowedOrigins = configuredOrigins.Length > 0
+    ? configuredOrigins
+    : ["http://localhost:3000", "http://localhost:5173", "https://stunningio-task-production.up.railway.app"];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(CorsPolicyName, policy =>
+    {
+        policy
+            .WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // Configure Health Checks
 builder.Services.AddAppHealthChecks(builder.Configuration);
@@ -63,6 +92,7 @@ app.Use(async (context, next) =>
 // Configure Middleware Pipeline
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseCors(CorsPolicyName);
 
 if (app.Environment.IsDevelopment())
 {

@@ -5,8 +5,18 @@ export class ApiError extends Error {
   }
 }
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://stunningio-task-production.up.railway.app').replace(/\/$/, '');
+
+function resolveApiUrl(endpoint: string): string {
+  if (/^https?:\/\//i.test(endpoint)) {
+    return endpoint;
+  }
+
+  return `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+}
+
 export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(endpoint, {
+  const response = await fetch(resolveApiUrl(endpoint), {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -41,7 +51,7 @@ export async function streamApi(
   signal?: AbortSignal
 ): Promise<void> {
   try {
-    const response = await fetch(endpoint, {
+    const response = await fetch(resolveApiUrl(endpoint), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
