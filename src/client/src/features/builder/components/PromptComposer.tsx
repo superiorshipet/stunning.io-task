@@ -47,7 +47,7 @@ export function PromptComposer({
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.max(110, textareaRef.current.scrollHeight)}px`;
+      textareaRef.current.style.height = `${Math.max(100, textareaRef.current.scrollHeight)}px`;
     }
   }, [prompt]);
 
@@ -55,11 +55,11 @@ export function PromptComposer({
 
   return (
     <>
-      <div className="relative w-full rounded-2xl bg-[#0E101B]/80 border border-white/15 shadow-[0_0_50px_-10px_rgba(139,92,246,0.3)] backdrop-blur-2xl transition-all focus-within:border-violet-500/60 focus-within:shadow-[0_0_60px_-5px_rgba(139,92,246,0.45)]">
-        {/* Subtle Top Glow Gradient */}
+      <div className="relative w-full rounded-2xl bg-[#0E101B]/85 border border-white/15 shadow-[0_0_60px_-10px_rgba(139,92,246,0.35)] backdrop-blur-2xl transition-all focus-within:border-violet-500/70 focus-within:shadow-[0_0_70px_-5px_rgba(139,92,246,0.5)]">
+        {/* Top Glow Accent Line */}
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-violet-400 to-transparent opacity-80" />
 
-        {/* Header Label */}
+        {/* Top Header Label */}
         <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-white/[0.06]">
           <div className="flex items-center gap-2">
             <Terminal className="w-3.5 h-3.5 text-violet-400" />
@@ -67,13 +67,13 @@ export function PromptComposer({
               WHAT SHOULD WE BUILD?
             </span>
           </div>
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] text-violet-300/80 bg-violet-950/60 border border-violet-500/20 px-2.5 py-0.5 rounded-full">
+          <span className="inline-flex items-center gap-2 font-mono text-[11px] text-violet-300/80 bg-violet-950/60 border border-violet-500/30 px-3 py-0.5 rounded-full shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Celestial Engine Active
           </span>
         </div>
 
-        {/* Multiline Prompt Input */}
+        {/* Seamless Multiline Prompt Input (No box, pure transparent text flow) */}
         <div className="p-6 pt-4">
           <textarea
             ref={textareaRef}
@@ -85,7 +85,8 @@ export function PromptComposer({
               }
             }}
             placeholder="Describe your software vision... (e.g. Build an AI-driven invoice factoring marketplace with Stripe billing, automated Shopify store audits, and customer alerts to Slack)"
-            className="w-full resize-none text-base sm:text-lg text-white placeholder:text-slate-500 placeholder:font-light font-normal bg-transparent focus:outline-hidden leading-relaxed"
+            style={{ outline: 'none', border: 'none', boxShadow: 'none' }}
+            className="w-full resize-none text-base sm:text-lg text-white placeholder:text-slate-500 placeholder:font-light font-normal bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none leading-relaxed"
           />
         </div>
 
@@ -134,7 +135,7 @@ export function PromptComposer({
             disabled={!prompt.trim() || isLoading}
             shortcut="⌘ ↵"
             rightIcon={<ArrowRight className="w-4 h-4" />}
-            className="px-5 py-2.5"
+            className="px-6 py-2.5 shadow-[0_0_25px_rgba(255,255,255,0.3)] hover:shadow-[0_0_35px_rgba(255,255,255,0.5)]"
           >
             <Sparkles className="w-4 h-4 mr-1.5 text-violet-600" />
             RUN BUILD

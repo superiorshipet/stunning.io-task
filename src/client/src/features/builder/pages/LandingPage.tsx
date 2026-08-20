@@ -6,7 +6,7 @@ import { useGenerationStream } from '@/features/generation/hooks/useGenerationSt
 import { SaveBuildAuthModal } from '@/features/auth/components/SaveBuildAuthModal';
 import { useAuth } from '@/features/auth/context/AuthContext';
 import { apiFetch } from '@/shared/api/client';
-import { Cpu, Zap, Shield, Sparkles } from 'lucide-react';
+import { Cpu, Zap, Shield, Sparkles, Terminal, Layers } from 'lucide-react';
 
 export function LandingPage() {
   const [prompt, setPrompt] = useState('');
@@ -84,37 +84,21 @@ export function LandingPage() {
   const isWorkspaceMode = isGenerating || !!generatedPlan;
 
   return (
-    <div className="relative flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-      {/* Background Ambient Glow Orbs */}
-      <div className="absolute top-20 right-10 w-[500px] h-[500px] bg-violet-600/15 rounded-full blur-[120px] pointer-events-none -z-10" />
-      <div className="absolute top-96 left-5 w-[450px] h-[450px] bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+    <div className="relative flex-1 w-full max-w-[1550px] mx-auto px-4 sm:px-8 lg:px-12 py-6 flex flex-col justify-between">
+      {/* Background Cosmic Ambient Lights & Orbit Ring */}
+      <div className="absolute top-10 right-1/4 w-[650px] h-[650px] bg-violet-600/15 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute top-48 left-10 w-[500px] h-[500px] bg-indigo-600/12 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute -top-20 right-10 w-[700px] h-[700px] orbit-ring border-white/5 opacity-50 -z-10" />
 
       {!isWorkspaceMode ? (
-        <div className="space-y-10 animate-in fade-in duration-300">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left Hero Content (7 cols) */}
-            <div className="lg:col-span-7">
-              <HeroSection />
-            </div>
-
-            {/* Right Glowing Celestial Emblem (5 cols) */}
-            <div className="hidden lg:flex lg:col-span-5 justify-center items-center relative">
-              <div className="relative w-72 h-72 rounded-3xl bg-gradient-to-tr from-violet-600/30 via-indigo-500/20 to-cyan-400/20 border border-white/20 p-8 flex flex-col items-center justify-center shadow-[0_0_80px_rgba(139,92,246,0.35)] backdrop-blur-2xl animate-float">
-                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-violet-500 via-indigo-600 to-purple-800 flex items-center justify-center shadow-glow-lg border border-violet-300/40 mb-4">
-                  <Cpu className="w-12 h-12 text-white animate-pulse" />
-                </div>
-                <span className="font-mono text-xs text-white font-bold uppercase tracking-wider">
-                  Celestial Core
-                </span>
-                <span className="text-[11px] font-mono text-violet-300 mt-1 text-center">
-                  .NET 10 • PostgreSql • Redis
-                </span>
-              </div>
-            </div>
+        <div className="space-y-8 animate-in fade-in duration-300 w-full">
+          {/* Hero Section */}
+          <div className="pt-2">
+            <HeroSection />
           </div>
 
-          {/* Prompt Composer Section */}
-          <div className="max-w-4xl">
+          {/* Full-Width Expansive Prompt Composer */}
+          <div className="w-full">
             <PromptComposer
               prompt={prompt}
               onChangePrompt={setPrompt}
@@ -125,12 +109,12 @@ export function LandingPage() {
             />
           </div>
 
-          {/* Quick Preset Badges */}
-          <div className="max-w-4xl pt-1">
+          {/* Quick Archetype Badges */}
+          <div className="w-full flex flex-wrap items-center justify-between gap-4 pt-1">
             <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-slate-400">
-              <span className="uppercase text-violet-400 font-bold flex items-center gap-1">
+              <span className="uppercase text-violet-400 font-bold flex items-center gap-1.5 mr-1">
                 <Sparkles className="w-3.5 h-3.5" />
-                Popular Archetypes:
+                POPULAR ARCHETYPES:
               </span>
               <button
                 type="button"
@@ -138,7 +122,7 @@ export function LandingPage() {
                   setPrompt('Subscription billing engine with Stripe webhook synchronization and customer email alerts');
                   setSelectedIntegrations(['stripe', 'gmail']);
                 }}
-                className="px-3 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] hover:text-white border border-white/10 transition-all cursor-pointer text-slate-300"
+                className="px-3.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] hover:text-white border border-white/10 hover:border-violet-500/40 transition-all cursor-pointer text-slate-200 shadow-2xs font-medium"
               >
                 Stripe Billing SaaS
               </button>
@@ -148,7 +132,7 @@ export function LandingPage() {
                   setPrompt('E-commerce inventory tracker syncing Shopify orders with Slack notifications and Google Sheets export');
                   setSelectedIntegrations(['shopify', 'slack', 'google-sheets']);
                 }}
-                className="px-3 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] hover:text-white border border-white/10 transition-all cursor-pointer text-slate-300"
+                className="px-3.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] hover:text-white border border-white/10 hover:border-violet-500/40 transition-all cursor-pointer text-slate-200 shadow-2xs font-medium"
               >
                 Shopify & Sheets Tracker
               </button>
@@ -158,42 +142,60 @@ export function LandingPage() {
                   setPrompt('Developer webhook dispatcher with Slack alerting, automated Gmail triage, and Stripe usage meters');
                   setSelectedIntegrations(['slack', 'gmail', 'stripe']);
                 }}
-                className="px-3 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] hover:text-white border border-white/10 transition-all cursor-pointer text-slate-300"
+                className="px-3.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] hover:text-white border border-white/10 hover:border-violet-500/40 transition-all cursor-pointer text-slate-200 shadow-2xs font-medium"
               >
                 Webhook Dispatcher
               </button>
             </div>
+
+            <div className="hidden sm:flex items-center gap-3 text-xs font-mono text-slate-500">
+              <span className="flex items-center gap-1">
+                <Terminal className="w-3.5 h-3.5 text-slate-400" />
+                <span>Zero Lock-in</span>
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <Layers className="w-3.5 h-3.5 text-slate-400" />
+                <span>Production Artifacts</span>
+              </span>
+            </div>
           </div>
 
-          {/* Feature Highlights Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl pt-6 border-t border-white/[0.08]">
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1.5">
-              <div className="flex items-center gap-2 text-white font-semibold text-xs">
-                <Zap className="w-4 h-4 text-violet-400" />
-                <span>Instant Synthesis</span>
+          {/* Three Feature Highlight Pillars */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-white/[0.08]">
+            <div className="p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.08] hover:border-violet-500/30 transition-all space-y-2">
+              <div className="flex items-center gap-2.5 text-white font-semibold text-sm">
+                <div className="w-7 h-7 rounded-lg bg-violet-950/80 border border-violet-500/40 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-violet-400" />
+                </div>
+                <span>Instant Architecture Synthesis</span>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                Real-time SSE token streaming transitions ideas straight into production topology maps.
+                Real-time SSE token streaming synthesizes your idea into structured system specifications and stack maps.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1.5">
-              <div className="flex items-center gap-2 text-white font-semibold text-xs">
-                <Shield className="w-4 h-4 text-cyan-400" />
-                <span>Ecosystem Connectors</span>
+            <div className="p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.08] hover:border-cyan-500/30 transition-all space-y-2">
+              <div className="flex items-center gap-2.5 text-white font-semibold text-sm">
+                <div className="w-7 h-7 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-cyan-400" />
+                </div>
+                <span>Pre-Wired Ecosystem Connectors</span>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                Direct integration schemas with pre-configured webhooks for Stripe, Shopify, Gmail, Slack & Sheets.
+                Native integrations for Stripe payments, Shopify stores, Gmail automation, Slack alerts, and Google Sheets sync.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1.5">
-              <div className="flex items-center gap-2 text-white font-semibold text-xs">
-                <Cpu className="w-4 h-4 text-indigo-400" />
-                <span>Deployable Blueprints</span>
+            <div className="p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.08] hover:border-indigo-500/30 transition-all space-y-2">
+              <div className="flex items-center gap-2.5 text-white font-semibold text-sm">
+                <div className="w-7 h-7 rounded-lg bg-indigo-950/80 border border-indigo-500/40 flex items-center justify-center">
+                  <Cpu className="w-4 h-4 text-indigo-400" />
+                </div>
+                <span>Implementation-Ready Blueprints</span>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                Receive stack choices, architectural node diagrams, and risk mitigations ready to commit.
+                Export clean markdown build plans, complete with entity models, deployment roadmaps, and risk mitigations.
               </p>
             </div>
           </div>
