@@ -1,0 +1,9 @@
+@StunningBuilder.Api_HostAddress = http://localhost:5176
+
+### Get Supported Integrations
+GET {{StunningBuilder.Api_HostAddress}}/api/v1/integrations
+Accept: application/json
+
+### Get OpenAPI Specification
+GET {{StunningBuilder.Api_HostAddress}}/openapi/v1.json
+Accept: application/json
