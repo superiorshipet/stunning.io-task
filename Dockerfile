@@ -22,8 +22,7 @@ WORKDIR /app
 COPY --from=backend-build /app/publish ./
 COPY --from=client-build /app/client/dist ./wwwroot
 
-ENV ASPNETCORE_URLS=http://+:5176
 ENV ASPNETCORE_ENVIRONMENT=Production
-EXPOSE 5176
+EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "StunningBuilder.Api.dll"]
+CMD ["sh", "-c", "ASPNETCORE_URLS=http://0.0.0.0:${PORT:-8080} dotnet StunningBuilder.Api.dll"]

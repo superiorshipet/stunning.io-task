@@ -42,18 +42,21 @@ if (configuredOrigins.Length == 0)
         .Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 }
 
-var allowedOrigins = configuredOrigins.Length > 0
-    ? configuredOrigins
-    : ["http://localhost:3000", "http://localhost:5173", "https://stunningio-task-production.up.railway.app"];
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyName, policy =>
     {
         policy
-            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
+
+        if (configuredOrigins.Length > 0)
+        {
+            policy.WithOrigins(configuredOrigins);
+            return;
+        }
+
+        policy.AllowAnyOrigin();
     });
 });
 
