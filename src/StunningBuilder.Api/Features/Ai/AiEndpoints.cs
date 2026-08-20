@@ -104,8 +104,15 @@ public static class AiEndpoints
             CreatedAt = DateTimeOffset.UtcNow
         };
 
-        db.GenerationSessions.Add(session);
-        await db.SaveChangesAsync(cancellationToken);
+        try
+        {
+            db.GenerationSessions.Add(session);
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            // Database offline or not yet initialized - proceed with generated output
+        }
 
         return TypedResults.Ok(new GenerateAppResponse(
             session.Id,
@@ -199,8 +206,15 @@ public static class AiEndpoints
             CreatedAt = DateTimeOffset.UtcNow
         };
 
-        db.GenerationSessions.Add(session);
-        await db.SaveChangesAsync(cancellationToken);
+        try
+        {
+            db.GenerationSessions.Add(session);
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            // Database offline or not yet initialized - proceed with generated output
+        }
 
         return TypedResults.Ok(new GenerateAppResponse(
             session.Id,
