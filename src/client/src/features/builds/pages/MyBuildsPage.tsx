@@ -25,7 +25,7 @@ export function MyBuildsPage() {
   }, [builds, search]);
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="flex-1 w-full px-6 sm:px-10 lg:px-16 py-10">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         {/* Subtle Workspace Sidebar (3 cols) */}
         <aside className="md:col-span-3 space-y-6">
@@ -95,7 +95,7 @@ export function MyBuildsPage() {
               </p>
             </div>
 
-            <div className="relative w-full sm:w-72">
+            <div className="relative w-full sm:w-80">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               <input
                 type="text"

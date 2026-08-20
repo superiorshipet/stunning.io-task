@@ -40,7 +40,7 @@ export function GenerationWorkspace({
   // 1. Loading & Streaming state
   if (isGenerating && !generatedPlan) {
     return (
-      <div className="relative w-full max-w-3xl mx-auto py-12 space-y-6 animate-in fade-in duration-300">
+      <div className="relative w-full max-w-4xl mx-auto py-12 space-y-6 animate-in fade-in duration-300">
         {/* Atmospheric Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-violet-600/15 rounded-full blur-3xl -z-10 pointer-events-none" />
 
@@ -82,7 +82,7 @@ export function GenerationWorkspace({
   // 2. Completed Plan Workspace
   if (generatedPlan) {
     return (
-      <div className="w-full max-w-7xl mx-auto py-8 animate-in fade-in duration-300">
+      <div className="w-full py-6 animate-in fade-in duration-300">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Sticky Navigation (3 cols) */}
           <aside className="hidden lg:block lg:col-span-3">

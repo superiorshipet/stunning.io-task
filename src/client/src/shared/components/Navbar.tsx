@@ -16,8 +16,8 @@ export function Navbar({ onOpenAuthModal }: NavbarProps) {
   const isHowItWorks = location.pathname === '/how-it-works';
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#06070B]/80 backdrop-blur-xl border-b border-white/[0.08]">
-      <div className="w-full max-w-[1550px] mx-auto px-4 sm:px-8 lg:px-12 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-40 w-full bg-[#06070B]/85 backdrop-blur-xl border-b border-white/[0.08]">
+      <div className="w-full px-6 sm:px-10 lg:px-16 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <div className="flex items-center gap-8">
           <Link
@@ -37,7 +37,7 @@ export function Navbar({ onOpenAuthModal }: NavbarProps) {
             <Link
               to="/how-it-works"
               className={cn(
-                'px-3 py-1.5 rounded-lg transition-colors hover:text-white hover:bg-white/[0.05]',
+                'px-3.5 py-1.5 rounded-lg transition-colors hover:text-white hover:bg-white/[0.05]',
                 isHowItWorks && 'text-white bg-white/[0.08] font-semibold'
               )}
             >
@@ -46,7 +46,7 @@ export function Navbar({ onOpenAuthModal }: NavbarProps) {
             <Link
               to="/builds"
               className={cn(
-                'px-3 py-1.5 rounded-lg transition-colors hover:text-white hover:bg-white/[0.05]',
+                'px-3.5 py-1.5 rounded-lg transition-colors hover:text-white hover:bg-white/[0.05]',
                 isMyBuilds && 'text-white bg-white/[0.08] font-semibold'
               )}
             >
@@ -59,9 +59,9 @@ export function Navbar({ onOpenAuthModal }: NavbarProps) {
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-xs font-mono text-slate-200 bg-white/[0.06] border border-white/10 px-3 py-1.5 rounded-lg">
+              <div className="flex items-center gap-2 text-xs font-mono text-slate-200 bg-white/[0.06] border border-white/10 px-3.5 py-1.5 rounded-lg">
                 <User className="w-3.5 h-3.5 text-violet-400" />
-                <span className="max-w-[140px] truncate">{user?.email}</span>
+                <span className="max-w-[160px] truncate">{user?.email}</span>
               </div>
               <button
                 onClick={logout}

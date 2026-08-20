@@ -84,11 +84,11 @@ export function LandingPage() {
   const isWorkspaceMode = isGenerating || !!generatedPlan;
 
   return (
-    <div className="relative flex-1 w-full max-w-[1550px] mx-auto px-4 sm:px-8 lg:px-12 py-6 flex flex-col justify-between">
+    <div className="relative flex-1 w-full px-6 sm:px-10 lg:px-16 py-8 flex flex-col justify-between">
       {/* Background Cosmic Ambient Lights & Orbit Ring */}
-      <div className="absolute top-10 right-1/4 w-[650px] h-[650px] bg-violet-600/15 rounded-full blur-[140px] pointer-events-none -z-10" />
-      <div className="absolute top-48 left-10 w-[500px] h-[500px] bg-indigo-600/12 rounded-full blur-[120px] pointer-events-none -z-10" />
-      <div className="absolute -top-20 right-10 w-[700px] h-[700px] orbit-ring border-white/5 opacity-50 -z-10" />
+      <div className="absolute top-10 right-1/4 w-[800px] h-[800px] bg-violet-600/15 rounded-full blur-[160px] pointer-events-none -z-10" />
+      <div className="absolute top-48 left-10 w-[600px] h-[600px] bg-indigo-600/12 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute -top-20 right-10 w-[800px] h-[800px] orbit-ring border-white/5 opacity-50 -z-10" />
 
       {!isWorkspaceMode ? (
         <div className="space-y-8 animate-in fade-in duration-300 w-full">
@@ -162,39 +162,39 @@ export function LandingPage() {
           </div>
 
           {/* Three Feature Highlight Pillars */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-white/[0.08]">
-            <div className="p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.08] hover:border-violet-500/30 transition-all space-y-2">
-              <div className="flex items-center gap-2.5 text-white font-semibold text-sm">
-                <div className="w-7 h-7 rounded-lg bg-violet-950/80 border border-violet-500/40 flex items-center justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/[0.08]">
+            <div className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.08] hover:border-violet-500/30 transition-all space-y-2.5">
+              <div className="flex items-center gap-3 text-white font-semibold text-sm">
+                <div className="w-8 h-8 rounded-lg bg-violet-950/80 border border-violet-500/40 flex items-center justify-center shadow-glow-sm">
                   <Zap className="w-4 h-4 text-violet-400" />
                 </div>
                 <span>Instant Architecture Synthesis</span>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed font-sans">
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
                 Real-time SSE token streaming synthesizes your idea into structured system specifications and stack maps.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.08] hover:border-cyan-500/30 transition-all space-y-2">
-              <div className="flex items-center gap-2.5 text-white font-semibold text-sm">
-                <div className="w-7 h-7 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center">
+            <div className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.08] hover:border-cyan-500/30 transition-all space-y-2.5">
+              <div className="flex items-center gap-3 text-white font-semibold text-sm">
+                <div className="w-8 h-8 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center shadow-glow-cyan">
                   <Shield className="w-4 h-4 text-cyan-400" />
                 </div>
                 <span>Pre-Wired Ecosystem Connectors</span>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed font-sans">
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
                 Native integrations for Stripe payments, Shopify stores, Gmail automation, Slack alerts, and Google Sheets sync.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.08] hover:border-indigo-500/30 transition-all space-y-2">
-              <div className="flex items-center gap-2.5 text-white font-semibold text-sm">
-                <div className="w-7 h-7 rounded-lg bg-indigo-950/80 border border-indigo-500/40 flex items-center justify-center">
+            <div className="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.08] hover:border-indigo-500/30 transition-all space-y-2.5">
+              <div className="flex items-center gap-3 text-white font-semibold text-sm">
+                <div className="w-8 h-8 rounded-lg bg-indigo-950/80 border border-indigo-500/40 flex items-center justify-center shadow-glow-sm">
                   <Cpu className="w-4 h-4 text-indigo-400" />
                 </div>
                 <span>Implementation-Ready Blueprints</span>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed font-sans">
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
                 Export clean markdown build plans, complete with entity models, deployment roadmaps, and risk mitigations.
               </p>
             </div>
