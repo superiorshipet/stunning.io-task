@@ -1,5 +1,6 @@
 @StunningBuilder.Api_HostAddress = http://localhost:5176
 @AppId = 00000000-0000-0000-0000-000000000000
+@BuildId = 00000000-0000-0000-0000-000000000000
 
 ### System Health Check (PostgreSQL & Redis)
 GET {{StunningBuilder.Api_HostAddress}}/health
@@ -24,28 +25,22 @@ Content-Type: application/json
   "framework": "nextjs"
 }
 
-### AI Generate App Scaffold (Direct JSON)
-POST {{StunningBuilder.Api_HostAddress}}/api/v1/generate
+### Trigger App Build
+POST {{StunningBuilder.Api_HostAddress}}/api/v1/apps/{{AppId}}/builds
 Content-Type: application/json
 
 {
-  "prompt": "Create a modern fitness subscription app with Stripe recurring billing and workout trackers",
-  "template": "saas",
-  "framework": "nextjs",
-  "requestedIntegrations": ["stripe", "slack"]
+  "commitMessage": "Release v1.0.0 with Stripe checkout",
+  "triggerType": "manual"
 }
 
-### AI Stream App Scaffold (Server-Sent Events)
-POST {{StunningBuilder.Api_HostAddress}}/api/v1/generate/stream
-Content-Type: application/json
-Accept: text/event-stream
+### List App Builds
+GET {{StunningBuilder.Api_HostAddress}}/api/v1/apps/{{AppId}}/builds
+Accept: application/json
 
-{
-  "prompt": "Create a modern real estate marketplace with Google Sheets lead sync",
-  "template": "ecommerce",
-  "framework": "nextjs",
-  "requestedIntegrations": ["google-sheets"]
-}
+### Get App Build Logs
+GET {{StunningBuilder.Api_HostAddress}}/api/v1/apps/{{AppId}}/builds/{{BuildId}}/logs
+Accept: application/json
 
 ### Get OpenAPI Specification
 GET {{StunningBuilder.Api_HostAddress}}/openapi/v1.json

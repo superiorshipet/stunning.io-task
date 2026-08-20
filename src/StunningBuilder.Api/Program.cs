@@ -6,6 +6,7 @@ using StunningBuilder.Api.Common.Health;
 using StunningBuilder.Api.Common.Redis;
 using StunningBuilder.Api.Common.Routing;
 using StunningBuilder.Api.Features.Ai;
+using StunningBuilder.Api.Features.Builds;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +24,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Configure Redis
 builder.Services.AddRedis(builder.Configuration);
 
-// Configure OpenAI Service
+// Configure AI and Build Services
 builder.Services.AddSingleton<OpenAiService>();
+builder.Services.AddSingleton<BuildService>();
 
 // Configure Health Checks
 builder.Services.AddAppHealthChecks(builder.Configuration);
@@ -42,6 +44,21 @@ builder.Services.AddOpenApi(options =>
 });
 
 var app = builder.Build();
+
+// Normalize duplicate slashes in request paths (e.g. //api/v1 -> /api/v1)
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value;
+    if (!string.IsNullOrEmpty(path) && path.Contains("//"))
+    {
+        while (path.Contains("//"))
+        {
+            path = path.Replace("//", "/");
+        }
+        context.Request.Path = path;
+    }
+    await next();
+});
 
 // Configure Middleware Pipeline
 app.UseExceptionHandler();
