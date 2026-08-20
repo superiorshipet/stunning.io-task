@@ -1,4 +1,5 @@
 @StunningBuilder.Api_HostAddress = http://localhost:5176
+@AppId = 00000000-0000-0000-0000-000000000000
 
 ### System Health Check (PostgreSQL & Redis)
 GET {{StunningBuilder.Api_HostAddress}}/health
@@ -21,6 +22,20 @@ Content-Type: application/json
   "description": "An AI-powered e-commerce storefront with Stripe and Shopify integration.",
   "template": "ecommerce",
   "framework": "nextjs"
+}
+
+### List Connected Integrations for an App
+GET {{StunningBuilder.Api_HostAddress}}/api/v1/apps/{{AppId}}/integrations
+Accept: application/json
+
+### Connect Stripe Integration to App
+POST {{StunningBuilder.Api_HostAddress}}/api/v1/apps/{{AppId}}/integrations
+Content-Type: application/json
+
+{
+  "integrationId": "stripe",
+  "accountName": "Primary Stripe Account",
+  "credentialsJson": "{\"apiKey\": \"sk_test_12345\"}"
 }
 
 ### Get OpenAPI Specification

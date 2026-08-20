@@ -12,6 +12,7 @@ public static class EndpointRouteExtensions
 
         v1Group.MapIntegrationsEndpoints();
         v1Group.MapAppsEndpoints();
+        v1Group.MapIntegrationConnectionEndpoints();
 
         return app;
     }
