@@ -4,7 +4,7 @@
 
 ---
 
-## 🌟 Overview
+## Overview
 
 **Stunning Builder** is an enterprise-grade AI architecture synthesis platform. It combines an editorial command-first frontend with a high-throughput .NET 10 Feature-Driven API, PostgreSQL persistence, and Redis real-time streaming.
 
