@@ -20,6 +20,7 @@ export function LandingPage() {
     isGenerating,
     streamedText,
     generatedPlan,
+    error,
     startGeneration,
     cancel,
   } = useGenerationStream();
@@ -206,6 +207,7 @@ export function LandingPage() {
           stages={stages}
           streamedText={streamedText}
           generatedPlan={generatedPlan}
+          error={error}
           onCancel={cancel}
           onSaveBuild={handleSaveBuild}
           onStartOver={handleStartOver}

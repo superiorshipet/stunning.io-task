@@ -52,7 +52,19 @@ export async function streamApi(
     });
 
     if (!response.ok) {
-      throw new Error(`Streaming failed: HTTP ${response.status}`);
+      let message = `Streaming failed: HTTP ${response.status}`;
+      try {
+        const errorData = await response.json();
+        message = errorData?.detail || errorData?.title || message;
+      } catch {
+        try {
+          const text = await response.text();
+          message = text || message;
+        } catch {
+          // Keep the HTTP status fallback.
+        }
+      }
+      throw new Error(message);
     }
 
     if (!response.body) {

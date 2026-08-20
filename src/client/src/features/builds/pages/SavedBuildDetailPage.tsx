@@ -51,42 +51,13 @@ export function SavedBuildDetailPage() {
     );
   }
 
-  const plan: GeneratedPlan = build.plan || {
+  const savedPlan = build.plan;
+  const plan: GeneratedPlan = savedPlan?.rawContent ? savedPlan : {
     title: build.name,
-    summary: build.description || 'Saved technical architecture build plan.',
-    template: build.template || 'saas',
-    framework: build.framework || 'nextjs',
+    summary: build.description || 'Saved AI model response.',
     integrations: build.integrations || [],
     createdAt: new Date(build.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-    overview: build.description || 'This architecture blueprint outlines system components and connected cloud services.',
-    architecture: {
-      diagramType: 'node_topology',
-      description: 'System architecture topology connecting web client, API gateway, and backend services.',
-      nodes: [
-        { name: 'Web Client', role: 'Frontend UI', type: 'frontend' },
-        { name: 'ASP.NET Core API', role: 'Engine', type: 'backend' },
-        { name: 'PostgreSQL', role: 'Data Layer', type: 'database' },
-      ],
-    },
-    stack: [
-      { layer: 'Frontend', technology: 'Next.js 15 + TypeScript + Tailwind CSS', reason: 'High performance rendering.' },
-      { layer: 'Backend', technology: 'ASP.NET Core .NET 10', reason: 'Feature-driven REST API.' },
-      { layer: 'Database', technology: 'PostgreSQL on Railway', reason: 'Relational data persistence.' },
-    ],
-    integrationDetails: (build.integrations || []).map((intId) => ({
-      id: intId,
-      name: intId.toUpperCase(),
-      strategy: `Integration connector for ${intId}.`,
-    })),
-    implementationSteps: [
-      { step: 1, title: 'Database Migrations', detail: 'Initialize tables for project models.', estimatedHours: '3h' },
-      { step: 2, title: 'API Endpoints', detail: 'Implement core endpoints.', estimatedHours: '5h' },
-      { step: 3, title: 'Integration Testing', detail: 'Verify webhooks and authentication.', estimatedHours: '4h' },
-    ],
-    risks: [
-      { risk: 'Third-party latency', severity: 'medium', mitigation: 'Use background queueing and caching.' },
-    ],
-    files: [],
+    rawContent: build.description || 'No saved AI response content was found for this build.',
   };
 
   return (

@@ -327,7 +327,7 @@ public static class AiEndpoints
             sb.AppendLine("Ensure the generated code integrates and configures SDKs for these services.");
         }
 
-        sb.AppendLine("Return clean, modular code with clear file paths.");
+        sb.AppendLine("Return the actual response as concise markdown with clear sections, practical implementation notes, and code snippets when useful.");
         return sb.ToString();
     }
 }

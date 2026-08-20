@@ -7,12 +7,7 @@ interface NavSection {
 }
 
 const SECTIONS: NavSection[] = [
-  { id: 'overview', number: '01', title: 'Overview' },
-  { id: 'architecture', number: '02', title: 'Architecture' },
-  { id: 'stack', number: '03', title: 'Stack' },
-  { id: 'integrations', number: '04', title: 'Integrations' },
-  { id: 'implementation', number: '05', title: 'Implementation' },
-  { id: 'risks', number: '06', title: 'Risks & Mitigation' },
+  { id: 'overview', number: '01', title: 'AI Response' },
 ];
 
 interface DocumentNavigationProps {

@@ -11,6 +11,7 @@ interface GenerationWorkspaceProps {
   stages: GenerationStage[];
   streamedText: string;
   generatedPlan: GeneratedPlan | null;
+  error?: string | null;
   onCancel: () => void;
   onSaveBuild: () => void;
   onStartOver: () => void;
@@ -22,6 +23,7 @@ export function GenerationWorkspace({
   stages,
   streamedText,
   generatedPlan,
+  error,
   onCancel,
   onSaveBuild,
   onStartOver,
@@ -36,6 +38,25 @@ export function GenerationWorkspace({
       elem.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  if (error && !isGenerating && !generatedPlan) {
+    return (
+      <div className="relative w-full max-w-3xl mx-auto py-16 space-y-5 animate-in fade-in duration-300">
+        <div className="rounded-2xl border border-rose-500/30 bg-rose-950/20 p-6 shadow-[0_0_40px_-12px_rgba(244,63,94,0.5)]">
+          <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-rose-300">
+            <Terminal className="w-4 h-4" />
+            AI generation failed
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-200">{error}</p>
+          <div className="mt-5">
+            <Button variant="outline" size="sm" onClick={onStartOver} leftIcon={<X className="w-3.5 h-3.5" />}>
+              Start Over
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // 1. Loading & Streaming state
   if (isGenerating && !generatedPlan) {

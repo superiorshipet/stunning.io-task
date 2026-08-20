@@ -12,7 +12,7 @@
 - **Backend API**: ASP.NET Core (.NET 10) Minimal APIs, Feature-Driven vertical slices.
 - **Database**: PostgreSQL with EF Core 10 & Npgsql.
 - **Cache & Real-Time Bus**: Redis (StackExchange.Redis) Pub/Sub and caching.
-- **AI Orchestration**: Official OpenAI SDK with Server-Sent Events (SSE) token streaming and offline fallback generator.
+- **AI Orchestration**: Groq or OpenAI chat models with Server-Sent Events (SSE) token streaming.
 
 ---
 
@@ -20,8 +20,11 @@
 
 ### 1. Start the Backend API (.NET 10)
 ```bash
+dotnet user-secrets set "Groq:ApiKey" "your_groq_key" --project "src/StunningBuilder.Api/StunningBuilder.Api.csproj"
 dotnet run --project "src/StunningBuilder.Api/StunningBuilder.Api.csproj" --urls "http://localhost:5176"
 ```
+
+You can alternatively set the `GROQ_API_KEY` environment variable before starting the API.
 - **API Endpoint**: `http://localhost:5176`
 - **Scalar Interactive Docs**: `http://localhost:5176/scalar/v1`
 - **Health Checks**: `http://localhost:5176/health`

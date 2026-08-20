@@ -25,7 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddRedis(builder.Configuration);
 
 // Configure AI and Build Services
-builder.Services.AddSingleton<OpenAiService>();
+builder.Services.AddHttpClient<OpenAiService>();
 builder.Services.AddSingleton<BuildService>();
 
 // Configure Health Checks
