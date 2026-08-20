@@ -8,6 +8,21 @@ Accept: application/json
 GET {{StunningBuilder.Api_HostAddress}}/api/v1/integrations
 Accept: application/json
 
+### List All Apps
+GET {{StunningBuilder.Api_HostAddress}}/api/v1/apps?page=1&pageSize=10
+Accept: application/json
+
+### Create New App
+POST {{StunningBuilder.Api_HostAddress}}/api/v1/apps
+Content-Type: application/json
+
+{
+  "name": "My Stunning Store",
+  "description": "An AI-powered e-commerce storefront with Stripe and Shopify integration.",
+  "template": "ecommerce",
+  "framework": "nextjs"
+}
+
 ### Get OpenAPI Specification
 GET {{StunningBuilder.Api_HostAddress}}/openapi/v1.json
 Accept: application/json

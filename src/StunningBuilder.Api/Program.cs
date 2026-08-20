@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using StunningBuilder.Api.Common.Database;
 using StunningBuilder.Api.Common.Errors;
 using StunningBuilder.Api.Common.Health;
@@ -45,6 +46,27 @@ app.UseStatusCodePages();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
+
+    // Redirect root and /swagger to the interactive Scalar API docs
+    app.MapGet("/", () => Results.Redirect("/scalar/v1")).ExcludeFromDescription();
+    app.MapGet("/swagger", () => Results.Redirect("/scalar/v1")).ExcludeFromDescription();
+
+    // Auto-migrate database in development when connection is reachable
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    try
+    {
+        if (db.Database.CanConnect())
+        {
+            db.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "Could not run database migrations at startup.");
+    }
 }
 
 app.UseHttpsRedirection();

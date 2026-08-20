@@ -1,3 +1,4 @@
+using StunningBuilder.Api.Features.Apps;
 using StunningBuilder.Api.Features.Integrations;
 
 namespace StunningBuilder.Api.Common.Routing;
@@ -10,6 +11,7 @@ public static class EndpointRouteExtensions
             .WithGroupName("v1");
 
         v1Group.MapIntegrationsEndpoints();
+        v1Group.MapAppsEndpoints();
 
         return app;
     }
