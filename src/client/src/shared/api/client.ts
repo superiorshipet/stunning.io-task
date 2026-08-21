@@ -103,9 +103,9 @@ export async function streamApi(
           return;
         }
 
-        let parsed: { Type?: string; Content?: string } | null = null;
+        let parsed: { Type?: string; Content?: string };
         try {
-          parsed = JSON.parse(dataStr);
+          parsed = JSON.parse(dataStr) as { Type?: string; Content?: string };
         } catch {
           onChunk(dataStr);
           continue;
