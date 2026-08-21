@@ -126,6 +126,8 @@ export function GenerationWorkspace({
               onSaveBuild={onSaveBuild}
               onStartOver={onStartOver}
               isSaved={isSaved}
+              activeSectionId={activeSection}
+              onSelectSection={scrollToSection}
             />
           </main>
         </div>

@@ -111,6 +111,8 @@ export function SavedBuildDetailPage() {
             onSaveBuild={() => {}}
             onStartOver={() => navigate('/')}
             isSaved={true}
+            activeSectionId={activeSection}
+            onSelectSection={scrollToSection}
           />
         </main>
       </div>

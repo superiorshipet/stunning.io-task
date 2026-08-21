@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StunningBuilder.Api.Common.Database;
+using StunningBuilder.Api.Features.Integrations;
 
 namespace StunningBuilder.Api.Features.Ai;
 
@@ -321,8 +322,7 @@ public static class AiEndpoints
 
         if (integrations is { Count: > 0 })
         {
-            sb.AppendLine($"Connected Integrations: {string.Join(", ", integrations)}");
-            sb.AppendLine("Ensure the generated code integrates and configures SDKs for these services.");
+            AppendIntegrationContext(sb, integrations);
         }
 
         sb.AppendLine("Return the response as complete GitHub-flavored Markdown split into exactly these top-level sections:");
@@ -334,6 +334,44 @@ public static class AiEndpoints
         sb.AppendLine("Cover practical setup steps, code snippets, core files, commands, and deployment notes.");
         sb.AppendLine("Keep each section self-contained so the client can render and save the full response without losing content.");
         return sb.ToString();
+    }
+
+    private static void AppendIntegrationContext(StringBuilder sb, IReadOnlyList<string> integrationIds)
+    {
+        var selectedIntegrations = integrationIds
+            .Select(id => IntegrationsCatalog.Supported.FirstOrDefault(integration =>
+                integration.Id.Equals(id, StringComparison.OrdinalIgnoreCase)))
+            .Where(integration => integration is not null)
+            .Select(integration => integration!)
+            .ToList();
+
+        var unknownIntegrationIds = integrationIds
+            .Where(id => selectedIntegrations.All(integration =>
+                !integration.Id.Equals(id, StringComparison.OrdinalIgnoreCase)))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        sb.AppendLine("## Selected Integration Context");
+
+        foreach (var integration in selectedIntegrations)
+        {
+            sb.AppendLine($"- {integration.Name} ({integration.Id})");
+            sb.AppendLine($"  Category: {integration.Category}");
+            sb.AppendLine($"  Auth Type: {integration.AuthType}");
+            sb.AppendLine($"  Capabilities: {string.Join(", ", integration.Capabilities)}");
+            sb.AppendLine($"  Business Role: {integration.Description}");
+            if (!string.IsNullOrWhiteSpace(integration.DocumentationUrl))
+            {
+                sb.AppendLine($"  Documentation: {integration.DocumentationUrl}");
+            }
+        }
+
+        if (unknownIntegrationIds.Count > 0)
+        {
+            sb.AppendLine($"- Additional requested integration ids: {string.Join(", ", unknownIntegrationIds)}");
+        }
+
+        sb.AppendLine("Use every selected integration as first-class architecture context. Explain exactly where it appears in user flows, APIs, data model, environment variables, webhook handling, and implementation code.");
     }
 
     private static async Task StreamSectionedGenerationAsync(

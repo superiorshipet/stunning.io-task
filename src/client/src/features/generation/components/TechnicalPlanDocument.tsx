@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { GeneratedPlan } from '../types';
 import { IntegrationBadge } from '@/features/integrations/components/IntegrationBadge';
 import { Button } from '@/shared/components/Button';
-import { Copy, Check, Bookmark, RotateCcw, Download, Sparkles } from 'lucide-react';
+import { Copy, Check, Bookmark, RotateCcw, Download, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MarkdownRenderer } from '@/shared/components/MarkdownRenderer';
 import { buildPlanSections } from '../utils/planSections';
 
@@ -11,6 +11,8 @@ interface TechnicalPlanDocumentProps {
   onSaveBuild: () => void;
   onStartOver: () => void;
   isSaved?: boolean;
+  activeSectionId?: string;
+  onSelectSection?: (id: string) => void;
 }
 
 export function TechnicalPlanDocument({
@@ -18,9 +20,24 @@ export function TechnicalPlanDocument({
   onSaveBuild,
   onStartOver,
   isSaved = false,
+  activeSectionId,
+  onSelectSection,
 }: TechnicalPlanDocumentProps) {
   const [copied, setCopied] = useState(false);
   const sections = plan.sections?.length ? plan.sections : buildPlanSections(plan.rawContent);
+  const currentSectionIndex = Math.max(
+    0,
+    sections.findIndex((section) => section.id === activeSectionId)
+  );
+  const currentSection = sections[currentSectionIndex] ?? sections[0];
+  const canGoPrevious = currentSectionIndex > 0;
+  const canGoNext = currentSectionIndex < sections.length - 1;
+
+  const selectSection = (index: number) => {
+    const targetSection = sections[index];
+    if (!targetSection) return;
+    onSelectSection?.(targetSection.id);
+  };
 
   const handleCopyMarkdown = () => {
     navigator.clipboard.writeText(plan.rawContent);
@@ -109,23 +126,58 @@ export function TechnicalPlanDocument({
         )}
       </div>
 
-      {sections.map((section) => (
-        <section key={section.id} id={section.id} className="space-y-4 scroll-mt-28">
+      {currentSection && (
+        <section id={currentSection.id} className="space-y-5 scroll-mt-28">
+          <div className="flex flex-col gap-3 border-b border-white/[0.08] pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-slate-500">
+                Page {currentSectionIndex + 1} / {sections.length}
+              </span>
+              <div className="h-1.5 w-28 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-violet-400 transition-all"
+                  style={{ width: `${((currentSectionIndex + 1) / sections.length) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => selectSection(currentSectionIndex - 1)}
+                disabled={!canGoPrevious}
+                leftIcon={<ChevronLeft className="w-3.5 h-3.5 text-slate-400" />}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => selectSection(currentSectionIndex + 1)}
+                disabled={!canGoNext}
+                rightIcon={<ChevronRight className="w-3.5 h-3.5 text-slate-400" />}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2.5 text-xs font-mono font-bold text-violet-400 uppercase tracking-widest">
             <span className="text-violet-300 bg-violet-950/80 border border-violet-500/30 px-1.5 py-0.5 rounded">
-              {section.number}
+              {currentSection.number}
             </span>
-            {section.title}
+            {currentSection.title}
           </div>
           <div className="bg-white/[0.03] p-6 rounded-xl border border-white/10">
-            {section.content ? (
-              <MarkdownRenderer content={section.content} />
+            {currentSection.content ? (
+              <MarkdownRenderer content={currentSection.content} />
             ) : (
               <p className="text-sm text-slate-500">No content was generated for this section.</p>
             )}
           </div>
         </section>
-      ))}
+      )}
     </div>
   );
 }
