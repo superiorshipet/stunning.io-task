@@ -26,4 +26,5 @@ export interface GeneratedPlan {
   integrations: string[];
   createdAt: string;
   rawContent: string;
+  sections: GeneratedPlanSection[];
 }

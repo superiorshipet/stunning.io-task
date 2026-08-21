@@ -6,13 +6,14 @@ import { ArrowLeft, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/shared/components/Button';
 import { GeneratedPlan } from '@/features/generation/types';
+import { buildPlanSections } from '@/features/generation/utils/planSections';
 
 export function SavedBuildDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: builds = [], isLoading } = useBuilds();
   const { mutate: deleteBuild } = useDeleteBuild();
-  const [activeSection, setActiveSection] = useState('overview');
+  const [activeSection, setActiveSection] = useState('planning');
 
   const build = builds.find((b) => b.id === id);
 
@@ -58,7 +59,9 @@ export function SavedBuildDetailPage() {
     integrations: build.integrations || [],
     createdAt: new Date(build.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     rawContent: build.description || 'No saved AI response content was found for this build.',
+    sections: buildPlanSections(build.description || 'No saved AI response content was found for this build.'),
   };
+  const sections = plan.sections?.length ? plan.sections : buildPlanSections(plan.rawContent);
 
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -98,6 +101,7 @@ export function SavedBuildDetailPage() {
           <DocumentNavigation
             activeSection={activeSection}
             onSelectSection={scrollToSection}
+            sections={sections}
           />
         </aside>
 

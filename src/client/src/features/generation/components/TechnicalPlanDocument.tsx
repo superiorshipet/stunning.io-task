@@ -3,6 +3,8 @@ import { GeneratedPlan } from '../types';
 import { IntegrationBadge } from '@/features/integrations/components/IntegrationBadge';
 import { Button } from '@/shared/components/Button';
 import { Copy, Check, Bookmark, RotateCcw, Download, Sparkles } from 'lucide-react';
+import { MarkdownRenderer } from '@/shared/components/MarkdownRenderer';
+import { buildPlanSections } from '../utils/planSections';
 
 interface TechnicalPlanDocumentProps {
   plan: GeneratedPlan;
@@ -18,6 +20,7 @@ export function TechnicalPlanDocument({
   isSaved = false,
 }: TechnicalPlanDocumentProps) {
   const [copied, setCopied] = useState(false);
+  const sections = plan.sections?.length ? plan.sections : buildPlanSections(plan.rawContent);
 
   const handleCopyMarkdown = () => {
     navigator.clipboard.writeText(plan.rawContent);
@@ -106,15 +109,23 @@ export function TechnicalPlanDocument({
         )}
       </div>
 
-      <section id="overview" className="space-y-4 scroll-mt-28">
-        <div className="flex items-center gap-2.5 text-xs font-mono font-bold text-violet-400 uppercase tracking-widest">
-          <span className="text-violet-300 bg-violet-950/80 border border-violet-500/30 px-1.5 py-0.5 rounded">01</span>
-          Model Output
-        </div>
-        <div className="text-sm sm:text-base text-slate-200 leading-relaxed bg-white/[0.03] p-6 rounded-xl border border-white/10 whitespace-pre-wrap">
-          {plan.rawContent}
-        </div>
-      </section>
+      {sections.map((section) => (
+        <section key={section.id} id={section.id} className="space-y-4 scroll-mt-28">
+          <div className="flex items-center gap-2.5 text-xs font-mono font-bold text-violet-400 uppercase tracking-widest">
+            <span className="text-violet-300 bg-violet-950/80 border border-violet-500/30 px-1.5 py-0.5 rounded">
+              {section.number}
+            </span>
+            {section.title}
+          </div>
+          <div className="bg-white/[0.03] p-6 rounded-xl border border-white/10">
+            {section.content ? (
+              <MarkdownRenderer content={section.content} />
+            ) : (
+              <p className="text-sm text-slate-500">No content was generated for this section.</p>
+            )}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

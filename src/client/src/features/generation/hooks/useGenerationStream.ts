@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { GenerationStage, GeneratedPlan } from '../types';
 import { streamApi } from '@/shared/api/client';
+import { buildPlanSections } from '../utils/planSections';
 
 const INITIAL_STAGES: GenerationStage[] = [
   { id: '1', number: '01', name: 'Understand idea', status: 'pending' },
@@ -135,5 +136,6 @@ function buildGeneratedPlanFromAiResponse(
     integrations,
     createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     rawContent: rawOutput.trim(),
+    sections: buildPlanSections(rawOutput),
   };
 }

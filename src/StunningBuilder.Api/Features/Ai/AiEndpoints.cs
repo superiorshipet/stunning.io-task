@@ -145,14 +145,13 @@ public static class AiEndpoints
         httpContext.Response.Headers.Append("Connection", "keep-alive");
 
         var systemPrompt = BuildSystemPrompt(request.Template, request.Framework, request.RequestedIntegrations);
-
-        await foreach (var token in aiService.StreamGenerateAsync(request.Prompt, systemPrompt, request.Model, cancellationToken))
-        {
-            var chunk = new GenerationStreamChunk("delta", Content: token);
-            var json = JsonSerializer.Serialize(chunk);
-            await httpContext.Response.WriteAsync($"data: {json}\n\n", Encoding.UTF8, cancellationToken);
-            await httpContext.Response.Body.FlushAsync(cancellationToken);
-        }
+        await StreamSectionedGenerationAsync(
+            aiService,
+            httpContext,
+            request.Prompt,
+            systemPrompt,
+            request.Model,
+            cancellationToken);
 
         var doneChunk = new GenerationStreamChunk("done");
         await httpContext.Response.WriteAsync($"data: {JsonSerializer.Serialize(doneChunk)}\n\n", Encoding.UTF8, cancellationToken);
@@ -255,14 +254,13 @@ public static class AiEndpoints
         httpContext.Response.Headers.Append("Connection", "keep-alive");
 
         var systemPrompt = BuildSystemPrompt(app.Template, app.Framework, connectedIntegrations, app.Name, app.Description);
-
-        await foreach (var token in aiService.StreamGenerateAsync(request.Prompt, systemPrompt, request.Model, cancellationToken))
-        {
-            var chunk = new GenerationStreamChunk("delta", Content: token);
-            var json = JsonSerializer.Serialize(chunk);
-            await httpContext.Response.WriteAsync($"data: {json}\n\n", Encoding.UTF8, cancellationToken);
-            await httpContext.Response.Body.FlushAsync(cancellationToken);
-        }
+        await StreamSectionedGenerationAsync(
+            aiService,
+            httpContext,
+            request.Prompt,
+            systemPrompt,
+            request.Model,
+            cancellationToken);
 
         var doneChunk = new GenerationStreamChunk("done");
         await httpContext.Response.WriteAsync($"data: {JsonSerializer.Serialize(doneChunk)}\n\n", Encoding.UTF8, cancellationToken);
@@ -327,7 +325,73 @@ public static class AiEndpoints
             sb.AppendLine("Ensure the generated code integrates and configures SDKs for these services.");
         }
 
-        sb.AppendLine("Return the actual response as concise markdown with clear sections, practical implementation notes, and code snippets when useful.");
+        sb.AppendLine("Return the response as complete GitHub-flavored Markdown split into exactly these top-level sections:");
+        sb.AppendLine("## Planning");
+        sb.AppendLine("Cover product scope, assumptions, user flows, milestones, environment variables, and risks.");
+        sb.AppendLine("## Architecture");
+        sb.AppendLine("Cover system topology, folder structure, data model, API boundaries, integrations, and webhook flow.");
+        sb.AppendLine("## Implementation");
+        sb.AppendLine("Cover practical setup steps, code snippets, core files, commands, and deployment notes.");
+        sb.AppendLine("Keep each section self-contained so the client can render and save the full response without losing content.");
         return sb.ToString();
+    }
+
+    private static async Task StreamSectionedGenerationAsync(
+        OpenAiService aiService,
+        HttpContext httpContext,
+        string userPrompt,
+        string baseSystemPrompt,
+        string? model,
+        CancellationToken cancellationToken)
+    {
+        var sections = new[]
+        {
+            new
+            {
+                Title = "Planning",
+                Instruction = "Generate only the Planning section. Cover product scope, assumptions, user flows, milestones, environment variables, and risks."
+            },
+            new
+            {
+                Title = "Architecture",
+                Instruction = "Generate only the Architecture section. Cover system topology, folder structure, data model, API boundaries, integrations, and webhook flow."
+            },
+            new
+            {
+                Title = "Implementation",
+                Instruction = "Generate only the Implementation section. Cover practical setup steps, code snippets, core files, commands, and deployment notes."
+            }
+        };
+
+        foreach (var section in sections)
+        {
+            await WriteStreamChunkAsync(httpContext, $"\n\n## {section.Title}\n\n", cancellationToken);
+
+            var sectionSystemPrompt = $"""
+{baseSystemPrompt}
+
+You are writing one section of a larger technical build plan.
+{section.Instruction}
+Do not include any other top-level section.
+Do not repeat the section title; the API stream already sends it.
+Return complete Markdown for this section.
+""";
+
+            await foreach (var token in aiService.StreamGenerateAsync(userPrompt, sectionSystemPrompt, model, cancellationToken))
+            {
+                await WriteStreamChunkAsync(httpContext, token, cancellationToken);
+            }
+        }
+    }
+
+    private static async Task WriteStreamChunkAsync(
+        HttpContext httpContext,
+        string content,
+        CancellationToken cancellationToken)
+    {
+        var chunk = new GenerationStreamChunk("delta", Content: content);
+        var json = JsonSerializer.Serialize(chunk);
+        await httpContext.Response.WriteAsync($"data: {json}\n\n", Encoding.UTF8, cancellationToken);
+        await httpContext.Response.Body.FlushAsync(cancellationToken);
     }
 }

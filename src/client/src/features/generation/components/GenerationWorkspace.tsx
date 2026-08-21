@@ -5,6 +5,7 @@ import { DocumentNavigation } from './DocumentNavigation';
 import { TechnicalPlanDocument } from './TechnicalPlanDocument';
 import { Button } from '@/shared/components/Button';
 import { X, Sparkles, Terminal } from 'lucide-react';
+import { buildPlanSections } from '../utils/planSections';
 
 interface GenerationWorkspaceProps {
   isGenerating: boolean;
@@ -29,7 +30,7 @@ export function GenerationWorkspace({
   onStartOver,
   isSaved = false,
 }: GenerationWorkspaceProps) {
-  const [activeSection, setActiveSection] = useState('overview');
+  const [activeSection, setActiveSection] = useState('planning');
 
   const scrollToSection = (id: string) => {
     setActiveSection(id);
@@ -102,6 +103,10 @@ export function GenerationWorkspace({
 
   // 2. Completed Plan Workspace
   if (generatedPlan) {
+    const sections = generatedPlan.sections?.length
+      ? generatedPlan.sections
+      : buildPlanSections(generatedPlan.rawContent);
+
     return (
       <div className="w-full py-6 animate-in fade-in duration-300">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -110,6 +115,7 @@ export function GenerationWorkspace({
             <DocumentNavigation
               activeSection={activeSection}
               onSelectSection={scrollToSection}
+              sections={sections}
             />
           </aside>
 

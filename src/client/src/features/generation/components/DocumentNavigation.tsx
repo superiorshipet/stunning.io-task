@@ -1,21 +1,13 @@
 import { cn } from '@/shared/utils/cn';
-
-interface NavSection {
-  id: string;
-  number: string;
-  title: string;
-}
-
-const SECTIONS: NavSection[] = [
-  { id: 'overview', number: '01', title: 'AI Response' },
-];
+import { GeneratedPlanSection } from '../types';
 
 interface DocumentNavigationProps {
   activeSection: string;
   onSelectSection: (id: string) => void;
+  sections: GeneratedPlanSection[];
 }
 
-export function DocumentNavigation({ activeSection, onSelectSection }: DocumentNavigationProps) {
+export function DocumentNavigation({ activeSection, onSelectSection, sections }: DocumentNavigationProps) {
   return (
     <nav className="sticky top-24 w-full space-y-1.5 font-mono text-xs select-none p-3 rounded-2xl bg-[#0E101B]/80 border border-white/10 backdrop-blur-xl">
       <div className="px-3 py-1 text-[10px] uppercase font-bold text-violet-400 tracking-wider">
@@ -23,7 +15,7 @@ export function DocumentNavigation({ activeSection, onSelectSection }: DocumentN
       </div>
 
       <div className="space-y-1">
-        {SECTIONS.map((sec) => {
+        {sections.map((sec) => {
           const isActive = activeSection === sec.id;
           return (
             <button
