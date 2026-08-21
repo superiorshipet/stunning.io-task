@@ -9,8 +9,6 @@ namespace StunningBuilder.Api.Features.Ai;
 
 public static class AiEndpoints
 {
-    private const int MaxSectionContinuations = 2;
-
     public static IEndpointRouteBuilder MapAiEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("/generate")
@@ -398,106 +396,42 @@ public static class AiEndpoints
         string? model,
         CancellationToken cancellationToken)
     {
-        var sections = new[]
-        {
-            new
-            {
-                Title = "Planning",
-                Instruction = "Generate only the Planning section. Cover product scope, assumptions, user flows, milestones, environment variables, and risks."
-            },
-            new
-            {
-                Title = "Architecture",
-                Instruction = "Generate only the Architecture section. Cover system topology, folder structure, data model, API boundaries, integrations, and webhook flow."
-            },
-            new
-            {
-                Title = "Implementation",
-                Instruction = "Generate only the Implementation section. Cover practical setup steps, code snippets, core files, commands, and deployment notes."
-            }
-        };
+        var streamingPrompt = $"""
+{userPrompt}
 
-        foreach (var section in sections)
-        {
-            var sectionSystemPrompt = $"""
-{baseSystemPrompt}
+Generate one complete Markdown technical build plan now.
+Include exactly these top-level headings, in this order:
+## Planning
+## Architecture
+## Implementation
 
-You are writing one section of a larger technical build plan.
-{section.Instruction}
-Do not include any other top-level section.
-Do not repeat the section title; the API stream already sends it.
-Return complete Markdown for this section.
+Do not stop after Planning. Keep Architecture and Implementation concise but complete.
 """;
 
-            var sectionContent = new StringBuilder();
-            var sectionPrompt = userPrompt;
-            var sectionStarted = false;
+        var started = false;
 
-            try
+        try
+        {
+            await foreach (var token in aiService.StreamGenerateAsync(
+                streamingPrompt,
+                baseSystemPrompt,
+                model,
+                cancellationToken))
             {
-                for (var attempt = 0; attempt <= MaxSectionContinuations; attempt++)
-                {
-                    string? finishReason = null;
-
-                    await foreach (var token in aiService.StreamGenerateAsync(
-                        sectionPrompt,
-                        sectionSystemPrompt,
-                        model,
-                        reason => finishReason = reason,
-                        cancellationToken))
-                    {
-                        if (!sectionStarted)
-                        {
-                            await WriteStreamChunkAsync(httpContext, $"\n\n## {section.Title}\n\n", cancellationToken);
-                            sectionStarted = true;
-                        }
-
-                        sectionContent.Append(token);
-                        await WriteStreamChunkAsync(httpContext, token, cancellationToken);
-                    }
-
-                    if (!sectionStarted)
-                    {
-                        throw new InvalidOperationException($"AI provider returned no content for the {section.Title} section.");
-                    }
-
-                    if (!string.Equals(finishReason, "length", StringComparison.OrdinalIgnoreCase))
-                    {
-                        break;
-                    }
-
-                    sectionPrompt = BuildContinuationPrompt(userPrompt, section.Title, sectionContent.ToString());
-                    await WriteStreamChunkAsync(httpContext, "\n\n", cancellationToken);
-                }
+                started = true;
+                await WriteStreamChunkAsync(httpContext, token, cancellationToken);
             }
-            catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+
+            if (!started)
             {
-                await WriteStreamErrorAsync(httpContext, $"AI generation failed while writing {section.Title}: {ex.Message}", cancellationToken);
-                return;
+                throw new InvalidOperationException("AI provider returned no content.");
             }
         }
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            await WriteStreamErrorAsync(httpContext, $"AI generation failed: {ex.Message}", cancellationToken);
+        }
     }
-
-    private static string BuildContinuationPrompt(string originalPrompt, string sectionTitle, string sectionContent)
-    {
-        var endingExcerpt = sectionContent.Length <= 2500
-            ? sectionContent
-            : sectionContent[^2500..];
-
-        return $"""
-Original user request:
-{originalPrompt}
-
-Continue the {sectionTitle} section exactly from where the previous answer stopped.
-Do not restart the section.
-Do not repeat previous paragraphs or code blocks.
-Keep writing the same Markdown document.
-
-Previous answer ending excerpt:
-{endingExcerpt}
-""";
-    }
-
 
     private static async Task WriteStreamErrorAsync(
         HttpContext httpContext,

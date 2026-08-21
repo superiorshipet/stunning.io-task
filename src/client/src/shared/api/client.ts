@@ -103,19 +103,21 @@ export async function streamApi(
           return;
         }
 
+        let parsed: { Type?: string; Content?: string } | null = null;
         try {
-          const parsed = JSON.parse(dataStr);
-          if (parsed.Type === 'delta' && parsed.Content) {
-            onChunk(parsed.Content);
-          } else if (parsed.Type === 'error') {
-            throw new Error(parsed.Content || 'AI generation failed.');
-          } else if (parsed.Type === 'done') {
-            onDone();
-            return;
-          }
+          parsed = JSON.parse(dataStr);
         } catch {
-          // If plain text token
           onChunk(dataStr);
+          continue;
+        }
+
+        if (parsed.Type === 'delta' && parsed.Content) {
+          onChunk(parsed.Content);
+        } else if (parsed.Type === 'error') {
+          throw new Error(parsed.Content || 'AI generation failed.');
+        } else if (parsed.Type === 'done') {
+          onDone();
+          return;
         }
       }
     }

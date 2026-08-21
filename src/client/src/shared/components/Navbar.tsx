@@ -12,8 +12,8 @@ export function Navbar() {
       <div className="w-full px-6 sm:px-10 lg:px-16 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <div className="flex items-center gap-8">
-          <Link
-            to="/"
+          <a
+            href="/"
             className="flex items-center gap-2.5 text-white hover:opacity-90 transition-opacity group"
           >
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-glow-sm group-hover:shadow-glow-md transition-shadow">
@@ -22,7 +22,7 @@ export function Navbar() {
             <span className="font-bold tracking-tight uppercase text-xs text-white">
               STUNNING <span className="text-violet-400/50 font-light">/</span> <span className="font-mono text-slate-300 font-medium tracking-wider">BUILDER</span>
             </span>
-          </Link>
+          </a>
 
           {/* Navigation Links */}
           <nav className="hidden sm:flex items-center gap-1 text-xs font-medium text-slate-400">
