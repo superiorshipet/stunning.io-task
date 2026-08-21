@@ -59,3 +59,30 @@ Open **`http://localhost:3000`** in your browser.
 ```bash
 docker-compose up --build
 ```
+
+## Production configuration notes
+
+For a hosted frontend, set the client API base URL at build time:
+
+```bash
+VITE_API_BASE_URL=https://stunningio-task-production.up.railway.app
+```
+
+For the Railway backend, the important runtime variables are:
+
+```bash
+DATABASE_URL=postgresql://...
+REDIS_URL=redis://...
+GROQ_API_KEY=...
+Groq__DefaultModel=openai/gpt-oss-120b
+Groq__MaxCompletionTokens=8192
+```
+
+The streaming generation endpoint returns one complete technical plan, but the UI paginates it into:
+
+- Planning
+- Architecture
+- Implementation
+
+The full markdown response is still preserved in `rawContent` for copy, export, and saved builds.
+
