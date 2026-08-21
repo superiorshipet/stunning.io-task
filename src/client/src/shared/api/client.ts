@@ -107,6 +107,8 @@ export async function streamApi(
           const parsed = JSON.parse(dataStr);
           if (parsed.Type === 'delta' && parsed.Content) {
             onChunk(parsed.Content);
+          } else if (parsed.Type === 'error') {
+            throw new Error(parsed.Content || 'AI generation failed.');
           } else if (parsed.Type === 'done') {
             onDone();
             return;

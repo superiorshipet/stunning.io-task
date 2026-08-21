@@ -143,6 +143,13 @@ public static class AiEndpoints
             return;
         }
 
+        if (!aiService.IsConfigured)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await httpContext.Response.WriteAsync("AI provider key is not configured. Set GROQ_API_KEY or OPENAI_API_KEY.", cancellationToken);
+            return;
+        }
+
         httpContext.Response.Headers.Append("Content-Type", "text/event-stream");
         httpContext.Response.Headers.Append("Cache-Control", "no-cache");
         httpContext.Response.Headers.Append("Connection", "keep-alive");
@@ -244,6 +251,13 @@ public static class AiEndpoints
         {
             httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
             await httpContext.Response.WriteAsync("App not found", cancellationToken);
+            return;
+        }
+
+        if (!aiService.IsConfigured)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await httpContext.Response.WriteAsync("AI provider key is not configured. Set GROQ_API_KEY or OPENAI_API_KEY.", cancellationToken);
             return;
         }
 
@@ -405,8 +419,6 @@ public static class AiEndpoints
 
         foreach (var section in sections)
         {
-            await WriteStreamChunkAsync(httpContext, $"\n\n## {section.Title}\n\n", cancellationToken);
-
             var sectionSystemPrompt = $"""
 {baseSystemPrompt}
 
@@ -419,29 +431,49 @@ Return complete Markdown for this section.
 
             var sectionContent = new StringBuilder();
             var sectionPrompt = userPrompt;
+            var sectionStarted = false;
 
-            for (var attempt = 0; attempt <= MaxSectionContinuations; attempt++)
+            try
             {
-                string? finishReason = null;
-
-                await foreach (var token in aiService.StreamGenerateAsync(
-                    sectionPrompt,
-                    sectionSystemPrompt,
-                    model,
-                    reason => finishReason = reason,
-                    cancellationToken))
+                for (var attempt = 0; attempt <= MaxSectionContinuations; attempt++)
                 {
-                    sectionContent.Append(token);
-                    await WriteStreamChunkAsync(httpContext, token, cancellationToken);
-                }
+                    string? finishReason = null;
 
-                if (!string.Equals(finishReason, "length", StringComparison.OrdinalIgnoreCase))
-                {
-                    break;
-                }
+                    await foreach (var token in aiService.StreamGenerateAsync(
+                        sectionPrompt,
+                        sectionSystemPrompt,
+                        model,
+                        reason => finishReason = reason,
+                        cancellationToken))
+                    {
+                        if (!sectionStarted)
+                        {
+                            await WriteStreamChunkAsync(httpContext, $"\n\n## {section.Title}\n\n", cancellationToken);
+                            sectionStarted = true;
+                        }
 
-                sectionPrompt = BuildContinuationPrompt(userPrompt, section.Title, sectionContent.ToString());
-                await WriteStreamChunkAsync(httpContext, "\n\n", cancellationToken);
+                        sectionContent.Append(token);
+                        await WriteStreamChunkAsync(httpContext, token, cancellationToken);
+                    }
+
+                    if (!sectionStarted)
+                    {
+                        throw new InvalidOperationException($"AI provider returned no content for the {section.Title} section.");
+                    }
+
+                    if (!string.Equals(finishReason, "length", StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+
+                    sectionPrompt = BuildContinuationPrompt(userPrompt, section.Title, sectionContent.ToString());
+                    await WriteStreamChunkAsync(httpContext, "\n\n", cancellationToken);
+                }
+            }
+            catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+            {
+                await WriteStreamErrorAsync(httpContext, $"AI generation failed while writing {section.Title}: {ex.Message}", cancellationToken);
+                return;
             }
         }
     }
@@ -464,6 +496,18 @@ Keep writing the same Markdown document.
 Previous answer ending excerpt:
 {endingExcerpt}
 """;
+    }
+
+
+    private static async Task WriteStreamErrorAsync(
+        HttpContext httpContext,
+        string message,
+        CancellationToken cancellationToken)
+    {
+        var chunk = new GenerationStreamChunk("error", Content: message);
+        var json = JsonSerializer.Serialize(chunk);
+        await httpContext.Response.WriteAsync($"data: {json}\n\n", Encoding.UTF8, cancellationToken);
+        await httpContext.Response.Body.FlushAsync(cancellationToken);
     }
 
     private static async Task WriteStreamChunkAsync(
