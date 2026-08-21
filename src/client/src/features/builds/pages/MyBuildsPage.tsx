@@ -2,13 +2,11 @@ import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBuilds, useDeleteBuild } from '../api/useBuilds';
 import { BuildRow } from '../components/BuildRow';
-import { useAuth } from '@/features/auth/context/AuthContext';
-import { Plus, Search, Terminal, LogOut, User, FolderGit2 } from 'lucide-react';
+import { Plus, Search, Terminal, FolderGit2 } from 'lucide-react';
 import { Button } from '@/shared/components/Button';
 
 export function MyBuildsPage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
   const { data: builds = [], isLoading } = useBuilds();
   const { mutate: deleteBuild } = useDeleteBuild();
   const [search, setSearch] = useState('');
@@ -51,34 +49,6 @@ export function MyBuildsPage() {
                 {builds.length}
               </span>
             </Link>
-          </div>
-
-          {/* User Profile Box */}
-          <div className="p-4 rounded-2xl border border-white/10 bg-[#0E101B]/80 backdrop-blur-xl space-y-3.5 font-mono text-xs shadow-2xs">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-violet-950/80 border border-violet-500/40 text-violet-300 flex items-center justify-center font-bold">
-                <User className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <span className="font-semibold text-white block truncate">
-                  {user?.email || 'Anonymous Workspace'}
-                </span>
-                <span className="text-[10px] text-slate-400 block">Celestial Tier</span>
-              </div>
-            </div>
-
-            {user && (
-              <button
-                onClick={() => {
-                  logout();
-                  navigate('/');
-                }}
-                className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 transition-colors text-[11px] cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                Sign Out
-              </button>
-            )}
           </div>
         </aside>
 

@@ -21,13 +21,13 @@ export function IntegrationBadge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 font-mono text-[11px] font-medium text-slate-200 bg-white/[0.06] border border-white/10 rounded-md shadow-2xs select-none',
+        'inline-flex items-center gap-1.5 font-mono text-[11px] font-extrabold uppercase tracking-wide text-white bg-violet-500/15 border border-violet-300/35 rounded-md shadow-glow-sm select-none',
         size === 'sm' ? 'px-2 py-0.5' : 'px-2.5 py-1 text-xs',
         className
       )}
     >
       {icon}
-      <span>{name || id}</span>
+      <span className="font-extrabold">{name || id}</span>
     </span>
   );
 }

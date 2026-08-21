@@ -1,17 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/features/auth/context/AuthContext';
-import { Button } from './Button';
-import { User, LogOut, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { cn } from '../utils/cn';
 
-interface NavbarProps {
-  onOpenAuthModal?: () => void;
-}
-
-export function Navbar({ onOpenAuthModal }: NavbarProps) {
+export function Navbar() {
   const location = useLocation();
-  const { user, isAuthenticated, logout } = useAuth();
-
   const isMyBuilds = location.pathname.startsWith('/builds');
   const isHowItWorks = location.pathname === '/how-it-works';
 
@@ -55,32 +47,8 @@ export function Navbar({ onOpenAuthModal }: NavbarProps) {
           </nav>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-3">
-          {isAuthenticated ? (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-xs font-mono text-slate-200 bg-white/[0.06] border border-white/10 px-3.5 py-1.5 rounded-lg">
-                <User className="w-3.5 h-3.5 text-violet-400" />
-                <span className="max-w-[160px] truncate">{user?.email}</span>
-              </div>
-              <button
-                onClick={logout}
-                title="Sign out"
-                className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ) : (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={onOpenAuthModal}
-              className="text-xs px-4 bg-white/10 hover:bg-white/15 text-white border-white/20 hover:border-white/30 shadow-2xs"
-            >
-              Sign In
-            </Button>
-          )}
+        <div className="hidden sm:block text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-violet-300">
+          Live demo
         </div>
       </div>
     </header>

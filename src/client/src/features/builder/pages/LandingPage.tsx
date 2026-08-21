@@ -3,18 +3,14 @@ import { HeroSection } from '../components/HeroSection';
 import { PromptComposer } from '../components/PromptComposer';
 import { GenerationWorkspace } from '@/features/generation/components/GenerationWorkspace';
 import { useGenerationStream } from '@/features/generation/hooks/useGenerationStream';
-import { SaveBuildAuthModal } from '@/features/auth/components/SaveBuildAuthModal';
-import { useAuth } from '@/features/auth/context/AuthContext';
 import { apiFetch } from '@/shared/api/client';
 import { Cpu, Zap, Shield, Sparkles, Terminal, Layers } from 'lucide-react';
 
 export function LandingPage() {
   const [prompt, setPrompt] = useState('');
   const [selectedIntegrations, setSelectedIntegrations] = useState<string[]>(['stripe', 'slack']);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
-  const { isAuthenticated } = useAuth();
   const {
     stages,
     isGenerating,
@@ -38,11 +34,6 @@ export function LandingPage() {
   };
 
   const handleSaveBuild = async () => {
-    if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
-      return;
-    }
-
     if (!generatedPlan) return;
 
     try {
@@ -214,13 +205,6 @@ export function LandingPage() {
           isSaved={isSaved}
         />
       )}
-
-      {/* Save Build Authentication Modal */}
-      <SaveBuildAuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onSuccess={handleSaveBuild}
-      />
     </div>
   );
 }

@@ -13,13 +13,13 @@ export function ContextChip({ id, name, onRemove, className }: ContextChipProps)
   return (
     <span
       className={cn(
-        'group inline-flex items-center gap-2 pl-2.5 pr-2 py-1.5 rounded-lg text-xs font-mono font-medium',
-        'bg-white/[0.08] hover:bg-white/[0.12] text-slate-100 border border-white/15 backdrop-blur-md shadow-2xs transition-all',
+        'group inline-flex items-center gap-2 pl-2.5 pr-2 py-1.5 rounded-lg text-xs font-mono font-extrabold uppercase tracking-wide',
+        'bg-violet-500/18 hover:bg-violet-500/24 text-white border border-violet-300/45 backdrop-blur-md shadow-glow-sm transition-all',
         className
       )}
     >
       <span className="shrink-0">{getIntegrationIcon(id, true, 'w-3.5 h-3.5')}</span>
-      <span className="select-none text-white">{name}</span>
+      <span className="select-none text-white font-extrabold">{name}</span>
       <button
         type="button"
         onClick={(e) => {
