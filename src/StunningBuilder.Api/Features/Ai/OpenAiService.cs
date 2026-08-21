@@ -14,6 +14,9 @@ public sealed class OpenAiService(HttpClient httpClient, IConfiguration configur
                                            ?? configuration["Groq:ApiKey"];
     private readonly string _defaultModel = configuration["OpenAI:DefaultModel"] ?? "gpt-4o";
     private readonly string _groqDefaultModel = configuration["Groq:DefaultModel"] ?? "openai/gpt-oss-120b";
+    private readonly int _groqMaxCompletionTokens = int.TryParse(configuration["Groq:MaxCompletionTokens"], out var groqMaxCompletionTokens)
+        ? groqMaxCompletionTokens
+        : 8192;
 
     public bool IsConfigured => !string.IsNullOrWhiteSpace(_openAiApiKey) || !string.IsNullOrWhiteSpace(_groqApiKey);
 
@@ -64,9 +67,22 @@ public sealed class OpenAiService(HttpClient httpClient, IConfiguration configur
         string? model = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        await foreach (var token in StreamGenerateAsync(prompt, systemPrompt, model, onFinishReason: null, cancellationToken))
+        {
+            yield return token;
+        }
+    }
+
+    public async IAsyncEnumerable<string> StreamGenerateAsync(
+        string prompt,
+        string systemPrompt,
+        string? model,
+        Action<string?>? onFinishReason,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
         if (!string.IsNullOrWhiteSpace(_groqApiKey))
         {
-            await foreach (var token in StreamGroqAsync(prompt, systemPrompt, ResolveGroqModel(model), cancellationToken))
+            await foreach (var token in StreamGroqAsync(prompt, systemPrompt, ResolveGroqModel(model), onFinishReason, cancellationToken))
             {
                 yield return token;
             }
@@ -100,6 +116,8 @@ public sealed class OpenAiService(HttpClient httpClient, IConfiguration configur
                 }
             }
         }
+
+        onFinishReason?.Invoke(null);
     }
 
     private string ResolveGroqModel(string? requestedModel)
@@ -151,6 +169,7 @@ public sealed class OpenAiService(HttpClient httpClient, IConfiguration configur
         string prompt,
         string systemPrompt,
         string model,
+        Action<string?>? onFinishReason,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         using var request = CreateGroqRequest(stream: true, prompt, systemPrompt, model);
@@ -195,6 +214,12 @@ public sealed class OpenAiService(HttpClient httpClient, IConfiguration configur
                 {
                     token = contentElement.GetString();
                 }
+
+                if (choice.TryGetProperty("finish_reason", out var finishReasonElement) &&
+                    finishReasonElement.ValueKind != JsonValueKind.Null)
+                {
+                    onFinishReason?.Invoke(finishReasonElement.GetString());
+                }
             }
             catch (JsonException ex)
             {
@@ -214,6 +239,7 @@ public sealed class OpenAiService(HttpClient httpClient, IConfiguration configur
         {
             model,
             stream,
+            max_completion_tokens = _groqMaxCompletionTokens,
             messages = new[]
             {
                 new { role = "system", content = systemPrompt },

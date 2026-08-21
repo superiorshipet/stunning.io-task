@@ -9,6 +9,8 @@ namespace StunningBuilder.Api.Features.Ai;
 
 public static class AiEndpoints
 {
+    private const int MaxSectionContinuations = 2;
+
     public static IEndpointRouteBuilder MapAiEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("/generate")
@@ -415,11 +417,53 @@ Do not repeat the section title; the API stream already sends it.
 Return complete Markdown for this section.
 """;
 
-            await foreach (var token in aiService.StreamGenerateAsync(userPrompt, sectionSystemPrompt, model, cancellationToken))
+            var sectionContent = new StringBuilder();
+            var sectionPrompt = userPrompt;
+
+            for (var attempt = 0; attempt <= MaxSectionContinuations; attempt++)
             {
-                await WriteStreamChunkAsync(httpContext, token, cancellationToken);
+                string? finishReason = null;
+
+                await foreach (var token in aiService.StreamGenerateAsync(
+                    sectionPrompt,
+                    sectionSystemPrompt,
+                    model,
+                    reason => finishReason = reason,
+                    cancellationToken))
+                {
+                    sectionContent.Append(token);
+                    await WriteStreamChunkAsync(httpContext, token, cancellationToken);
+                }
+
+                if (!string.Equals(finishReason, "length", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+
+                sectionPrompt = BuildContinuationPrompt(userPrompt, section.Title, sectionContent.ToString());
+                await WriteStreamChunkAsync(httpContext, "\n\n", cancellationToken);
             }
         }
+    }
+
+    private static string BuildContinuationPrompt(string originalPrompt, string sectionTitle, string sectionContent)
+    {
+        var endingExcerpt = sectionContent.Length <= 2500
+            ? sectionContent
+            : sectionContent[^2500..];
+
+        return $"""
+Original user request:
+{originalPrompt}
+
+Continue the {sectionTitle} section exactly from where the previous answer stopped.
+Do not restart the section.
+Do not repeat previous paragraphs or code blocks.
+Keep writing the same Markdown document.
+
+Previous answer ending excerpt:
+{endingExcerpt}
+""";
     }
 
     private static async Task WriteStreamChunkAsync(
