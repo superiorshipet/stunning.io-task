@@ -16,7 +16,7 @@ public sealed class OpenAiService(HttpClient httpClient, IConfiguration configur
     private readonly string _groqDefaultModel = configuration["Groq:DefaultModel"] ?? "openai/gpt-oss-120b";
     private readonly int _groqMaxCompletionTokens = int.TryParse(configuration["Groq:MaxCompletionTokens"], out var groqMaxCompletionTokens)
         ? groqMaxCompletionTokens
-        : 8192;
+        : 4096;
 
     public bool IsConfigured => !string.IsNullOrWhiteSpace(_openAiApiKey) || !string.IsNullOrWhiteSpace(_groqApiKey);
 
