@@ -70,6 +70,11 @@ export function buildPlanSections(rawContent: string): GeneratedPlanSection[] {
     }));
   }
 
+  const exactSections = extractNamedSections(normalized);
+  if (exactSections.some((section) => section.content?.trim())) {
+    return exactSections;
+  }
+
   const buckets: Record<SectionId, string[]> = {
     planning: [],
     architecture: [],
@@ -87,6 +92,60 @@ export function buildPlanSections(rawContent: string): GeneratedPlanSection[] {
     title: section.title,
     content: buckets[section.id].join('\n\n').trim(),
   }));
+}
+
+function extractNamedSections(content: string): GeneratedPlanSection[] {
+  const buckets: Record<SectionId, string[]> = {
+    planning: [],
+    architecture: [],
+    implementation: [],
+  };
+  let currentSection: SectionId = 'planning';
+
+  for (const line of content.split('\n')) {
+    const sectionId = getSectionIdFromHeading(line);
+    if (sectionId) {
+      currentSection = sectionId;
+      continue;
+    }
+
+    buckets[currentSection].push(line);
+  }
+
+  return SECTION_DEFINITIONS.map((section) => ({
+    id: section.id,
+    number: section.number,
+    title: section.title,
+    content: buckets[section.id].join('\n').trim(),
+  }));
+}
+
+function getSectionIdFromHeading(line: string): SectionId | null {
+  const match = line.trim().match(/^#{1,3}\s+(.+)$/);
+  if (!match) {
+    return null;
+  }
+
+  const heading = normalizeHeading(match[1]);
+  if (heading.includes('planning')) {
+    return 'planning';
+  }
+  if (heading.includes('architecture')) {
+    return 'architecture';
+  }
+  if (heading.includes('implementation')) {
+    return 'implementation';
+  }
+
+  return null;
+}
+
+function normalizeHeading(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function splitMarkdownIntoChunks(content: string): string[] {
